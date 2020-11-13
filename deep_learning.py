@@ -1,11 +1,12 @@
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import tensorflow as tf
 physical_devices = tf.config.list_physical_devices('GPU')
 tf.config.experimental.set_memory_growth(physical_devices[0], True)
 
-import numpy as np
 from tensorflow.keras.datasets import mnist
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Dropout, Activation
+from tensorflow.keras.layers import *
 from tensorflow.keras.utils import to_categorical # One hot encoding
 from tensorflow.keras.callbacks import TensorBoard
 from sklearn.metrics import confusion_matrix, classification_report, precision_recall_fscore_support
@@ -20,16 +21,23 @@ def deep_learning():
 	# Reshape matrices to 784-length vectors for training
 	x_train = x_train.reshape(60000, 784)
 	x_test = x_test.reshape(10000, 784)
+	x_val = x_train[-10000:] # Save 10000 images for validation
+	y_val = y_train[-10000:]
+	x_train = x_train[:-10000]
+	y_train = y_train[:-10000]
 
 	# Normalize between 0 and 1
 	x_train = x_train.astype('float32')
+	x_val = x_val.astype('float32')
 	x_test = x_test.astype('float32')
 	x_train /= 255
+	x_val /= 255
 	x_test /= 255
 
 	# One hot encoding of the output class
 	classes = 10
 	y_train = to_categorical(y_train, classes)
+	y_val = to_categorical(y_val, classes)
 	y_test = to_categorical(y_test, classes)
 
 	# Configure the model
@@ -49,8 +57,8 @@ def deep_learning():
 	# Train the model
 	history_callback = model.fit(x_train, y_train,
 								 batch_size=128, epochs=5,
-								 verbose=0,
-								 validation_data=(x_test, y_test),
+								 verbose=1,
+								 validation_data=(x_val, y_val),
 								 callbacks=[tcb])
 
 	score = model.evaluate(x_test, y_test)
@@ -75,6 +83,19 @@ def deep_learning():
 	ax1.legend()
 	ax2.legend()
 	plt.show()
+
+	# Show confusion matrix and statistics
+	ground_truth = y_test.argmax(axis=1)
+	predictions = predict(x_test).argmax(axis=1)
+
+	confusion = confusion_matrix(ground_truth, predictions)
+	print(confusion)
+
+	report = classification_report(ground_truth, predictions)
+	print(report)
+
+	stats = precision_recall_fscore_support(ground_truth, predictions, average="weighted")
+	print("Precision={0}, Recall={1}".format(stats[0], stats[1]))
 
 def predict(x):
 	return model.predict(x)
