@@ -1,4 +1,5 @@
-from deep_learning import deep_learning
+from deep_learning import DeepLearning
 
 if __name__ == '__main__':
-    deep_learning()
+    model = DeepLearning()
+    model.train()
