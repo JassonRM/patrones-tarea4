@@ -88,26 +88,23 @@ class DeepLearning:
         for i in range(self.layers - 2):
             self.model.add(Dense(self.neurons, activation='relu'))
         self.model.add(Dense(self.neurons, activation='relu'))
-
         self.model.add(Dense(10, activation='softmax'))
 
         # Summarize the built model
-        self.model.summary()
+        if self.verbose == 1:
+            self.model.summary()
 
         # Let's use the Adam optimizer for learning
         self.model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
-        # TensorBoard Callback
-        tcb = TensorBoard()
-
         # Train the model
         self.history_callback = self.model.fit(self.x_train, self.y_train, batch_size=128, epochs=self.epochs, verbose=self.verbose,
-                                               validation_data=(self.x_val, self.y_val), callbacks=[tcb])
+                                               validation_data=(self.x_val, self.y_val))
 
         return self.evaluate()
 
     def evaluate(self):
-        score = self.model.evaluate(self.x_test, self.y_test)
+        score = self.model.evaluate(self.x_test, self.y_test, verbose=self.verbose)
         print('Test score:', score[0])
         print('Test accuracy:', score[1])
 
