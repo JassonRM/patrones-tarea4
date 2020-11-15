@@ -10,7 +10,6 @@ from tensorflow.keras.datasets import mnist
 from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.layers import *
 from tensorflow.keras.utils import to_categorical  # One hot encoding
-from tensorflow.keras.callbacks import TensorBoard
 from sklearn.metrics import confusion_matrix, classification_report, precision_recall_fscore_support
 import matplotlib.pyplot as plt
 
@@ -120,7 +119,15 @@ class DeepLearning:
         return self.precision, self.recall
 
     def predict(self, x):
-        return self.model.predict(x)
+        x = x.astype('float32')
+        x /= 255
+        result = self.model.predict(x)[0]
+        max_value = 0
+        for i in range(10):
+            if result[i] > max_value:
+                max_value = result[i]
+                index = i
+        return index
 
     def print(self):
         # Plot accuracy and loss
