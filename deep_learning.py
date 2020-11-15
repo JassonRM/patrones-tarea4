@@ -7,7 +7,7 @@ physical_devices = tf.config.list_physical_devices('GPU')
 tf.config.experimental.set_memory_growth(physical_devices[0], True)
 
 from tensorflow.keras.datasets import mnist
-from tensorflow.keras.models import Sequential
+from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.layers import *
 from tensorflow.keras.utils import to_categorical  # One hot encoding
 from tensorflow.keras.callbacks import TensorBoard
@@ -36,8 +36,13 @@ class DeepLearning:
         self.precision = None
         self.recall = None
 
+    def load_model(self, path):
+        self.model = load_model(path)
 
-    def train(self):
+    def save_model(self, path):
+        self.model.save(path)
+
+    def create_data(self):
         # The MNIST data is split between 60,000 28 x 28 pixel training images and 10,000 28 x 28 pixel images
         (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
@@ -69,6 +74,15 @@ class DeepLearning:
         y_val = to_categorical(y_val, classes)
         y_test = to_categorical(y_test, classes)
 
+        # Save data
+        self.x_train = x_train
+        self.y_train = y_train
+        self.x_val = x_val
+        self.y_val = y_val
+        self.x_test = x_test
+        self.y_test = y_test
+
+    def train(self):
         # Configure the model
         self.model.add(Dense(self.neurons, activation='relu', input_shape=(784,)))
         for i in range(self.layers - 2):
@@ -86,25 +100,20 @@ class DeepLearning:
         # TensorBoard Callback
         tcb = TensorBoard()
 
-        # Save data
-        self.x_train = x_train
-        self.y_train = y_train
-        self.x_val = x_val
-        self.y_val = y_val
-        self.x_test = x_test
-        self.y_test = y_test
-
         # Train the model
-        self.history_callback = self.model.fit(x_train, y_train, batch_size=128, epochs=self.epochs, verbose=self.verbose,
-                                               validation_data=(x_val, y_val), callbacks=[tcb])
+        self.history_callback = self.model.fit(self.x_train, self.y_train, batch_size=128, epochs=self.epochs, verbose=self.verbose,
+                                               validation_data=(self.x_val, self.y_val), callbacks=[tcb])
 
-        score = self.model.evaluate(x_test, y_test)
+        return self.evaluate()
+
+    def evaluate(self):
+        score = self.model.evaluate(self.x_test, self.y_test)
         print('Test score:', score[0])
         print('Test accuracy:', score[1])
 
         # Calculate confusion matrix and report
-        ground_truth = y_test.argmax(axis=1)
-        predictions = self.predict(x_test).argmax(axis=1)
+        ground_truth = self.y_test.argmax(axis=1)
+        predictions = self.predict(self.x_test).argmax(axis=1)
         self.confusion_matrix = confusion_matrix(ground_truth, predictions)
         self.report = classification_report(ground_truth, predictions)
         stats = precision_recall_fscore_support(ground_truth, predictions, average="weighted")
