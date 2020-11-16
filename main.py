@@ -1,7 +1,11 @@
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QApplication
 import sys
+from sklearn import datasets
 import os
+
+from sklearn.model_selection import train_test_split
+
 from plots import plot_deep_learning
 from deep_learning import DeepLearning
 from svm import SVM
@@ -31,6 +35,10 @@ if __name__ == '__main__':
     window = Window(model)
     sys.exit(app.exec_())
 
-    # model2 = SVM()
+    # digits = datasets.load_digits()
+    # n_samples = len(digits.images)
+    # data = digits.images.reshape((n_samples, -1))
+    # x_train, x_test, y_train, y_test = train_test_split(data, digits.target, test_size=0.5, shuffle=False)
+    # model2 = SVM(x_train, x_test, y_train, y_test)
     # model2.train()
     # model2.print()
