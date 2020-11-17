@@ -3,6 +3,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import pyqtSlot
 import numpy as np
 
+
 class Window(QWidget):
     def __init__(self, model):
         super().__init__()
