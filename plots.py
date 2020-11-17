@@ -1,5 +1,8 @@
 import matplotlib.pyplot as plt
 from deep_learning import DeepLearning
+from sklearn import datasets
+from sklearn.model_selection import train_test_split
+from svm import SVM
 
 
 def plot_deep_learning(plots):
@@ -73,4 +76,27 @@ def plot_deep_learning(plots):
         plt.plot(layers, recall, label="Recall")
         plt.legend()
         plt.xlabel("training set size")
+        plt.show()
+
+
+def plot_svm(plots):
+    digits = datasets.load_digits()
+    n_samples = len(digits.images)
+    data = digits.images.reshape((n_samples, -1))
+    x_train, x_test, y_train, y_test = train_test_split(data, digits.target, test_size=0.5, shuffle=False)
+
+    if 'kernel' in plots:
+        precision = []
+        recall = []
+        kernels = ['linear', 'poly', 'rbf', 'sigmoid']
+        for kernel in kernels:
+            svm = SVM(x_train, x_test, y_train, y_test, kernel=kernel)
+            result = svm.train()
+            precision.append(result[0])
+            recall.append(result[1])
+        plt.plot(precision, recall, 'bo')
+        for xyk in zip(precision, recall, kernels):
+            plt.annotate(xyk[2], xyk[0:2])
+        # plt.xlim((0.4, 1))
+        # plt.ylim((0.4, 1))
         plt.show()
