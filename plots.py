@@ -4,6 +4,7 @@ from sklearn import datasets
 from sklearn.model_selection import train_test_split
 from svm import SVM
 import os
+from create_data import create_data
 
 epochs = 0
 neurons = 0
@@ -11,7 +12,8 @@ layers = 0
 training_set = 0
 
 
-def plot_deep_learning(x_train, y_train, x_val, y_val, x_test, y_test, plots):
+def plot_deep_learning(plots):
+    x_train, y_train, x_val, y_val, x_test, y_test = create_data()
     if "epochs" in plots:
         # Number of epochs
         precision = []
@@ -57,21 +59,21 @@ def plot_deep_learning(x_train, y_train, x_val, y_val, x_test, y_test, plots):
         plt.title("Layers")
         plt.show()
 
-
-# if "training_set" in plots:
-#     # Training set size
-#     precision = []
-#     recall = []
-#     for i in range(1000, 50000, 5000):
-#         model = DeepLearning(x_train, y_train, x_val, y_val, x_test, y_test, train_size=i)
-#         results = model.train()
-#         precision.append(results[0])
-#         recall.append(results[1])
-# plt.scatter(recall, precision)
-# plt.ylabel("Precision")
-# plt.xlabel("Recall")
-#     plt.title("Training set size")
-#     plt.show()
+    if "training_set" in plots:
+        # Training set size
+        precision = []
+        recall = []
+        for i in range(1000, 50000, 5000):
+            x_train, y_train, x_val, y_val, x_test, y_test = create_data(training_size=i)
+            model = DeepLearning(x_train, y_train, x_val, y_val, x_test, y_test, train_size=i)
+            results = model.train()
+            precision.append(results[0])
+            recall.append(results[1])
+        plt.scatter(recall, precision)
+        plt.ylabel("Precision")
+        plt.xlabel("Recall")
+        plt.title("Training set size")
+        plt.show()
 
 
 def plot_svm(plots):
