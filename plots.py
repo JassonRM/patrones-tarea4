@@ -6,75 +6,6 @@ from svm import SVM
 import os
 from create_data import create_data
 
-epochs = 0
-neurons = 0
-layers = 0
-training_set = 0
-
-
-def plot_deep_learning(plots):
-    x_train, y_train, x_val, y_val, x_test, y_test = create_data()
-    if "epochs" in plots:
-        # Number of epochs
-        precision = []
-        recall = []
-        for i in range(2, 21):
-            model = DeepLearning(x_train, y_train, x_val, y_val, x_test, y_test, epochs=i)
-            results = model.train()
-            precision.append(results[0])
-            recall.append(results[1])
-        plt.scatter(recall, precision)
-        plt.ylabel("Precision")
-        plt.xlabel("Recall")
-        plt.title("Epochs")
-        plt.show()
-
-    if "neurons" in plots:
-        # Number of layers
-        precision = []
-        recall = []
-        for i in range(5, 55, 5):
-            model = DeepLearning(x_train, y_train, x_val, y_val, x_test, y_test, neurons=i)
-            results = model.train()
-            precision.append(results[0])
-            recall.append(results[1])
-        plt.scatter(recall, precision)
-        plt.ylabel("Precision")
-        plt.xlabel("Recall")
-        plt.title("Neurons")
-        plt.show()
-
-    if "layers" in plots:
-        # Number of layers
-        precision = []
-        recall = []
-        for i in range(2, 11):
-            model = DeepLearning(x_train, y_train, x_val, y_val, x_test, y_test, layers=i)
-            results = model.train()
-            precision.append(results[0])
-            recall.append(results[1])
-        plt.scatter(recall, precision)
-        plt.ylabel("Precision")
-        plt.xlabel("Recall")
-        plt.title("Layers")
-        plt.show()
-
-    if "training_set" in plots:
-        # Training set size
-        precision = []
-        recall = []
-        for i in range(1000, 50000, 5000):
-            x_train, y_train, x_val, y_val, x_test, y_test = create_data(training_size=i)
-            model = DeepLearning(x_train, y_train, x_val, y_val, x_test, y_test, train_size=i)
-            results = model.train()
-            precision.append(results[0])
-            recall.append(results[1])
-        plt.scatter(recall, precision)
-        plt.ylabel("Precision")
-        plt.xlabel("Recall")
-        plt.title("Training set size")
-        plt.show()
-
 
 def plot_svm(plots):
     digits = datasets.load_digits()
@@ -172,12 +103,107 @@ def plot_svm(plots):
         plt.show()
 
 
-def best_dl_model():
-    model = DeepLearning(epochs=epochs, neurons=neurons, layers=layers, train_size=training_set, verbose=1)
-    if os.path.exists("best_dl_model"):
+def plot_deep_learning(plots):
+    x_train, y_train, x_val, y_val, x_test, y_test = create_data()
+    if "epochs" in plots:
+        # Number of epochs
+        precision = []
+        recall = []
+        for i in range(2, 21):
+            model = DeepLearning(x_train, y_train, x_val, y_val, x_test, y_test, epochs=i)
+            results = model.train()
+            precision.append(results[0])
+            recall.append(results[1])
+        plt.scatter(recall, precision)
+        plt.ylabel("Precision")
+        plt.xlabel("Recall")
+        plt.title("Epochs")
+        plt.show()
+
+    if "neurons" in plots:
+        # Number of layers
+        precision = []
+        recall = []
+        for i in range(5, 55, 5):
+            model = DeepLearning(x_train, y_train, x_val, y_val, x_test, y_test, neurons=i)
+            results = model.train()
+            precision.append(results[0])
+            recall.append(results[1])
+        plt.scatter(recall, precision)
+        plt.ylabel("Precision")
+        plt.xlabel("Recall")
+        plt.title("Neurons")
+        plt.show()
+
+    if "layers" in plots:
+        # Number of layers
+        precision = []
+        recall = []
+        for i in range(2, 11):
+            model = DeepLearning(x_train, y_train, x_val, y_val, x_test, y_test, layers=i)
+            results = model.train()
+            precision.append(results[0])
+            recall.append(results[1])
+        plt.scatter(recall, precision)
+        plt.ylabel("Precision")
+        plt.xlabel("Recall")
+        plt.title("Layers")
+        plt.show()
+
+    if "training_set" in plots:
+        # Training set size
+        precision = []
+        recall = []
+        for i in range(1000, 50000, 5000):
+            x_train, y_train, x_val, y_val, x_test, y_test = create_data(training_size=i)
+            model = DeepLearning(x_train, y_train, x_val, y_val, x_test, y_test)
+            results = model.train()
+            precision.append(results[0])
+            recall.append(results[1])
+        plt.scatter(recall, precision)
+        plt.ylabel("Precision")
+        plt.xlabel("Recall")
+        plt.title("Training set size")
+        plt.show()
+
+
+def best_dl_model(retrain=False):
+    if os.path.exists("best_dl_model") and not retrain:
+        model = DeepLearning(None, None, None, None, None, None)
         model.load_model("best_dl_model")
     else:
-        model.create_data()
-        model.train()
-        model.save_model("best_dl_model")
-    return model
+        best_model = None
+        best_precision = 0
+        best_recall = 0
+        best_training_set = None
+        best_epochs = None
+        best_neurons = None
+        best_layers = None
+
+        for training_set in range(100, 50000, 5000):
+            x_train, y_train, x_val, y_val, x_test, y_test = create_data(training_size=training_set)
+            for epochs in range(2, 21, 2):
+                for neurons in range(5, 55, 5):
+                    for layers in range(2, 11):
+                        model = DeepLearning(x_train, y_train, x_val, y_val, x_test, y_test, epochs=epochs, neurons=neurons, layers=layers)
+                        precision, recall = model.train()
+                        if precision + recall > best_precision + best_recall:
+                            best_model = model
+                            best_precision = precision
+                            best_recall = recall
+                            best_training_set = training_set
+                            best_epochs = epochs
+                            best_neurons = neurons
+                            best_layers = layers
+
+        print("Best configuration:")
+        print("Precision: ", best_precision)
+        print("Recall: ", best_recall)
+        print("Training set size: ", best_training_set)
+        print("Epochs: ", best_epochs)
+        print("Neurons: ", best_neurons)
+        print("Layers: ", best_layers)
+        print("----------------------")
+        best_model.print()
+        best_model.save_model("best_dl_model")
+    return best_model
