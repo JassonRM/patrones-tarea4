@@ -5,6 +5,9 @@ from deep_learning import DeepLearning
 from svm import SVM
 import os
 from create_data import create_data
+import warnings
+
+warnings.filterwarnings('always')
 
 
 def plot_svm(plots):
@@ -108,10 +111,11 @@ def best_svm_model(retrain=False):
         best_model = SVM(None, None, None, None)
         best_model.load_model("best_svm_model")
     else:
-        x_train, y_train, x_val, y_val, x_test, y_test = create_data(training_size=500, test_size=1618)
+        x_train, y_train, x_val, y_val, x_test, y_test = create_data()
 
         precision = []
         recall = []
+        config = []
         highest_score = 0
         best_model = None
         for kernel in ['linear', 'poly', 'rbf']:
@@ -125,6 +129,7 @@ def best_svm_model(retrain=False):
                                 result = svc.train()
                                 precision.append(result[0])
                                 recall.append(result[1])
+                                config.append((svc.get_data()))
                                 if (result[0] + result[1]) / 2 > highest_score:
                                     highest_score = (result[0] + result[1]) / 2
                                     best_model = svc
@@ -133,6 +138,7 @@ def best_svm_model(retrain=False):
                             result = svc.train()
                             precision.append(result[0])
                             recall.append(result[1])
+                            config.append((svc.get_data()))
                             if (result[0] + result[1]) / 2 > highest_score:
                                 highest_score = (result[0] + result[1]) / 2
                                 best_model = svc
@@ -141,6 +147,7 @@ def best_svm_model(retrain=False):
                     result = svc.train()
                     precision.append(result[0])
                     recall.append(result[1])
+                    config.append((svc.get_data()))
                     if (result[0] + result[1]) / 2 > highest_score:
                         highest_score = (result[0] + result[1]) / 2
                         best_model = svc
@@ -153,11 +160,14 @@ def best_svm_model(retrain=False):
         ax = plt.gca()
 
         for corner in pareto_front:
-            rect = patches.Rectangle((0, 0), corner[0], corner[1], facecolor='gray', alpha=0.005)
+            rect = patches.Rectangle((0, 0), corner[0], corner[1], facecolor='gray', alpha=0.005, zorder=-1)
             ax.add_patch(rect)
-        plt.scatter(precision, recall)
-
+        plt.scatter(precision, recall, zorder=1)
+        plt.title('Pareto Front')
         plt.show()
+        print(pareto)
+        for i in pareto:
+            print(config[i])
         best_model.save_model('best_svm_model')
         best_model.print()
     return best_model

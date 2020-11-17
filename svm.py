@@ -53,6 +53,9 @@ class SVM:
     def save_model(self, path):
         dump(self.classifier, path)
 
+    def get_data(self):
+        return self.classifier.kernel, self.classifier.C, self.classifier.gamma, self.classifier.degree
+
     def print(self):
         print("Confusion matrix:\n%s" % self.confusion_matrix)
         print("Precision:\n%s" % self.precision)
