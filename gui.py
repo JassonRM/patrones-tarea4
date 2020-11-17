@@ -3,6 +3,8 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import pyqtSlot
 import numpy as np
 
+# Class designed based on the tutorial available at
+# https://www.learnpyqt.com/tutorials/bitmap-graphics/
 
 class Window(QWidget):
     def __init__(self, model):

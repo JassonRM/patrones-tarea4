@@ -159,7 +159,7 @@ def plot_deep_learning(plots):
         # Number of epochs
         precision = []
         recall = []
-        for i in range(2, 21):
+        for i in range(2, 21, 2):
             model = DeepLearning(x_train, y_train, x_val, y_val, x_test, y_test, epochs=i)
             results = model.train()
             precision.append(results[0])
@@ -174,7 +174,7 @@ def plot_deep_learning(plots):
         # Number of layers
         precision = []
         recall = []
-        for i in range(5, 55, 5):
+        for i in range(5, 60, 10):
             model = DeepLearning(x_train, y_train, x_val, y_val, x_test, y_test, neurons=i)
             results = model.train()
             precision.append(results[0])
@@ -189,7 +189,7 @@ def plot_deep_learning(plots):
         # Number of layers
         precision = []
         recall = []
-        for i in range(2, 11):
+        for i in range(2, 11, 2):
             model = DeepLearning(x_train, y_train, x_val, y_val, x_test, y_test, layers=i)
             results = model.train()
             precision.append(results[0])
@@ -204,7 +204,7 @@ def plot_deep_learning(plots):
         # Training set size
         precision = []
         recall = []
-        for i in range(1000, 50000, 5000):
+        for i in range(10000, 60000, 10000):
             x_train, y_train, x_val, y_val, x_test, y_test = create_data(training_size=i)
             model = DeepLearning(x_train, y_train, x_val, y_val, x_test, y_test)
             results = model.train()
@@ -219,8 +219,8 @@ def plot_deep_learning(plots):
 
 def best_dl_model(retrain=False):
     if os.path.exists("best_dl_model") and not retrain:
-        model = DeepLearning(None, None, None, None, None, None)
-        model.load_model("best_dl_model")
+        best_model = DeepLearning(None, None, None, None, None, None)
+        best_model.load_model("best_dl_model")
     else:
         best_model = None
         best_precision = 0
@@ -230,11 +230,11 @@ def best_dl_model(retrain=False):
         best_neurons = None
         best_layers = None
 
-        for training_set in range(100, 50000, 5000):
-            x_train, y_train, x_val, y_val, x_test, y_test = create_data(training_size=training_set)
+        for training_set in range(10000, 60000, 10000):
+            x_train, y_train, x_val, y_val, x_test, y_test = create_data()
             for epochs in range(2, 21, 2):
-                for neurons in range(5, 55, 5):
-                    for layers in range(2, 11):
+                for neurons in range(5, 60, 10):
+                    for layers in range(2, 11, 2):
                         model = DeepLearning(x_train, y_train, x_val, y_val, x_test, y_test, epochs=epochs, neurons=neurons, layers=layers)
                         precision, recall = model.train()
                         if precision + recall > best_precision + best_recall:
