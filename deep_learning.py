@@ -1,4 +1,8 @@
 import os
+
+# Suppress logs
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
 import tensorflow as tf
 import matplotlib.pyplot as plt
 from tensorflow.keras.models import Sequential, load_model
@@ -6,12 +10,13 @@ from tensorflow.keras.layers import *
 from tensorflow.keras.utils import to_categorical  # One hot encoding
 from sklearn.metrics import confusion_matrix, classification_report, precision_recall_fscore_support
 
-# Suppress logs
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-
 # CUDA Setup
 physical_devices = tf.config.list_physical_devices('GPU')
 tf.config.experimental.set_memory_growth(physical_devices[0], True)
+
+# This class is based on the tutorial presented in
+# https://machinelearningmastery.com/how-to-develop-a-convolutional-neural-network-from-scratch-for-mnist-handwritten-digit-classification/
+# as well as lesson 17 from Pablo Alvarado Moya's Introduction to pattern recognition course at TEC.
 
 class DeepLearning:
     def __init__(self, x_train, y_train, x_val, y_val, x_test, y_test, epochs=5, layers=2, neurons=512, verbose=0):
@@ -68,7 +73,7 @@ class DeepLearning:
         self.model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
         # Train the model
-        self.history_callback = self.model.fit(self.x_train, self.y_train, batch_size=128, epochs=self.epochs,
+        self.history_callback = self.model.fit(self.x_train, self.y_train, batch_size=100, epochs=self.epochs,
                                                verbose=self.verbose,
                                                validation_data=(self.x_val, self.y_val))
 

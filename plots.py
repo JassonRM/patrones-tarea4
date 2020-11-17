@@ -2,6 +2,8 @@ import matplotlib.pyplot as plt
 from matplotlib import patches
 import numpy as np
 from deep_learning import DeepLearning
+from sklearn import datasets
+from sklearn.model_selection import train_test_split
 from svm import SVM
 import os
 from create_data import create_data
@@ -169,7 +171,7 @@ def plot_deep_learning(plots):
         # Number of epochs
         precision = []
         recall = []
-        for i in range(2, 21):
+        for i in range(2, 21, 2):
             model = DeepLearning(x_train, y_train, x_val, y_val, x_test, y_test, epochs=i)
             results = model.train()
             precision.append(results[0])
@@ -184,7 +186,7 @@ def plot_deep_learning(plots):
         # Number of layers
         precision = []
         recall = []
-        for i in range(5, 55, 5):
+        for i in range(5, 60, 10):
             model = DeepLearning(x_train, y_train, x_val, y_val, x_test, y_test, neurons=i)
             results = model.train()
             precision.append(results[0])
@@ -199,7 +201,7 @@ def plot_deep_learning(plots):
         # Number of layers
         precision = []
         recall = []
-        for i in range(2, 11):
+        for i in range(2, 11, 2):
             model = DeepLearning(x_train, y_train, x_val, y_val, x_test, y_test, layers=i)
             results = model.train()
             precision.append(results[0])
@@ -214,7 +216,7 @@ def plot_deep_learning(plots):
         # Training set size
         precision = []
         recall = []
-        for i in range(1000, 50000, 5000):
+        for i in range(10000, 60000, 10000):
             x_train, y_train, x_val, y_val, x_test, y_test = create_data(training_size=i)
             model = DeepLearning(x_train, y_train, x_val, y_val, x_test, y_test)
             results = model.train()
@@ -240,13 +242,12 @@ def best_dl_model(retrain=False):
         best_neurons = None
         best_layers = None
 
-        for training_set in range(100, 50000, 5000):
-            x_train, y_train, x_val, y_val, x_test, y_test = create_data(training_size=training_set)
+        for training_set in range(10000, 60000, 10000):
+            x_train, y_train, x_val, y_val, x_test, y_test = create_data()
             for epochs in range(2, 21, 2):
-                for neurons in range(5, 55, 5):
-                    for layers in range(2, 11):
-                        model = DeepLearning(x_train, y_train, x_val, y_val, x_test, y_test, epochs=epochs,
-                                             neurons=neurons, layers=layers)
+                for neurons in range(5, 60, 10):
+                    for layers in range(2, 11, 2):
+                        model = DeepLearning(x_train, y_train, x_val, y_val, x_test, y_test, epochs=epochs, neurons=neurons, layers=layers)
                         precision, recall = model.train()
                         if precision + recall > best_precision + best_recall:
                             best_model = model
@@ -268,26 +269,3 @@ def best_dl_model(retrain=False):
         best_model.print()
         best_model.save_model("best_dl_model")
     return best_model
-
-
-# Code taken from https://pythonhealthcare.org/tag/pareto-front/
-def identify_pareto(scores):
-    # Count number of items
-    population_size = scores.shape[0]
-    # Create a NumPy index for scores on the pareto front (zero indexed)
-    population_ids = np.arange(population_size)
-    # Create a starting list of items on the Pareto front
-    # All items start off as being labelled as on the Parteo front
-    pareto_front = np.ones(population_size, dtype=bool)
-    # Loop through each item. This will then be compared with all other items
-    for i in range(population_size):
-        # Loop through all other items
-        for j in range(population_size):
-            # Check if our 'i' pint is dominated by out 'j' point
-            if all(scores[j] >= scores[i]) and any(scores[j] > scores[i]):
-                # j dominates i. Label 'i' point as not on Pareto front
-                pareto_front[i] = 0
-                # Stop further comparisons with 'i' (no more comparisons needed)
-                break
-    # Return ids of scenarios on pareto front
-    return population_ids[pareto_front]
