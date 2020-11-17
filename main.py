@@ -9,9 +9,6 @@ from tensorflow.keras.datasets import mnist
 from deep_learning import DeepLearning
 from gui import Window
 
-
-
-
 if __name__ == '__main__':
     train_size = 50000
     val_size = 10000
@@ -33,7 +30,7 @@ if __name__ == '__main__':
         print("The MNIST data set only has 60000 images, train_size and val_size can't be more than 60000")
         exit(-1)
 
-    plot_deep_learning(x_train, y_train, x_val, y_val, x_test, y_test, ["epochs", "layers", "neurons", "training_set"])
+    # plot_deep_learning(x_train, y_train, x_val, y_val, x_test, y_test, ["epochs", "layers", "neurons", "training_set"])
 
     # model = best_dl_model()
     # model.create_data()
@@ -44,7 +41,7 @@ if __name__ == '__main__':
     # window = Window(model)
     # sys.exit(app.exec_())
 
-    plot_svm('kernel')
+    plot_svm(['degree'])
     # model2 = SVM(x_train, x_test, y_train, y_test)
     # model2.train()
     # model2.print()
