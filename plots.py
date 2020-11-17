@@ -170,6 +170,55 @@ def plot_svm(plots):
         plt.show()
 
 
+def plot_best_svm_overall():
+    digits = datasets.load_digits()
+    n_samples = len(digits.images)
+    data = digits.images.reshape((n_samples, -1))
+    x_train, x_test, y_train, y_test = train_test_split(data, digits.target, test_size=0.5, shuffle=False)
+
+    precision = []
+    recall = []
+    highest_score = 0
+    highest_model = None
+    for kernel in ['linear', 'poly', 'rbf', 'sigmoid']:
+        for _c in range(10, 1000, 10):
+            c = _c / 100
+            if kernel == 'poly' or kernel == 'sigmoid' or kernel == 'rbf':
+                for gamma in range(1, 100, 1):
+                    g = gamma / 10000
+                    if kernel == 'poly':
+                        for degree in range(1, 25, 1):
+                            svc = SVM(x_train, x_test, y_train, y_test, gamma=g, C=c, kernel=kernel, degree=degree)
+                            result = svc.train()
+                            precision.append(result[0])
+                            recall.append(result[1])
+                            if (result[0] + result[1]) / 2 > highest_score:
+                                highest_score = (result[0] + result[1]) / 2
+                                highest_model = svc
+                    else:
+                        svc = SVM(x_train, x_test, y_train, y_test, gamma=g, C=c, kernel=kernel)
+                        result = svc.train()
+                        precision.append(result[0])
+                        recall.append(result[1])
+                        if (result[0] + result[1]) / 2 > highest_score:
+                            highest_score = (result[0] + result[1]) / 2
+                            highest_model = svc
+            else:
+                svc = SVM(x_train, x_test, y_train, y_test, C=c, kernel=kernel)
+                result = svc.train()
+                precision.append(result[0])
+                recall.append(result[1])
+                if (result[0] + result[1]) / 2 > highest_score:
+                    highest_score = (result[0] + result[1]) / 2
+                    highest_model = svc
+    plt.plot(precision, recall, 'bo')
+    plt.ylabel('Recall')
+    plt.xlabel('Precision')
+    plt.show()
+
+    highest_model.print()
+
+
 def best_dl_model():
     model = DeepLearning(epochs=epochs, neurons=neurons, layers=layers, train_size=training_set, verbose=1)
     if os.path.exists("best_dl_model"):

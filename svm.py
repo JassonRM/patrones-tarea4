@@ -52,3 +52,7 @@ class SVM:
         print("Recall:\n%s" % self.recall)
         print(self.avg_recall)
         print(self.avg_precision)
+        print(self.classifier.kernel)
+        print(self.classifier.gamma)
+        print(self.classifier.C)
+        print(self.classifier.degree)
