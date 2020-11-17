@@ -247,7 +247,8 @@ def best_dl_model(retrain=False):
             for epochs in range(2, 21, 2):
                 for neurons in range(5, 60, 10):
                     for layers in range(2, 11, 2):
-                        model = DeepLearning(x_train, y_train, x_val, y_val, x_test, y_test, epochs=epochs, neurons=neurons, layers=layers)
+                        model = DeepLearning(x_train, y_train, x_val, y_val, x_test, y_test, epochs=epochs,
+                                             neurons=neurons, layers=layers)
                         precision, recall = model.train()
                         if precision + recall > best_precision + best_recall:
                             best_model = model
@@ -269,3 +270,26 @@ def best_dl_model(retrain=False):
         best_model.print()
         best_model.save_model("best_dl_model")
     return best_model
+
+
+# Code taken from https://pythonhealthcare.org/tag/pareto-front/
+def identify_pareto(scores):
+    # Count number of items
+    population_size = scores.shape[0]
+    # Create a NumPy index for scores on the pareto front (zero indexed)
+    population_ids = np.arange(population_size)
+    # Create a starting list of items on the Pareto front
+    # All items start off as being labelled as on the Parteo front
+    pareto_front = np.ones(population_size, dtype=bool)
+    # Loop through each item. This will then be compared with all other items
+    for i in range(population_size):
+        # Loop through all other items
+        for j in range(population_size):
+            # Check if our 'i' pint is dominated by out 'j' point
+            if all(scores[j] >= scores[i]) and any(scores[j] > scores[i]):
+                # j dominates i. Label 'i' point as not on Pareto front
+                pareto_front[i] = 0
+                # Stop further comparisons with 'i' (no more comparisons needed)
+                break
+    # Return ids of scenarios on pareto front
+    return population_ids[pareto_front]
