@@ -3,80 +3,74 @@ from deep_learning import DeepLearning
 from sklearn import datasets
 from sklearn.model_selection import train_test_split
 from svm import SVM
+import os
+
+epochs = 0
+neurons = 0
+layers = 0
+training_set = 0
 
 
-def plot_deep_learning(plots):
+def plot_deep_learning(x_train, y_train, x_val, y_val, x_test, y_test, plots):
     if "epochs" in plots:
         # Number of epochs
         precision = []
         recall = []
-        layers = []
         for i in range(2, 21):
-            model = DeepLearning(epochs=i)
-            model.create_data()
+            model = DeepLearning(x_train, y_train, x_val, y_val, x_test, y_test, epochs=i)
             results = model.train()
             precision.append(results[0])
             recall.append(results[1])
-            layers.append(i)
-        plt.plot(layers, precision, label="Precision")
-        plt.plot(layers, recall, label="Recall")
-        plt.legend()
-        plt.xlabel("epochs")
+        plt.scatter(recall, precision)
+        plt.ylabel("Precision")
+        plt.xlabel("Recall")
+        plt.title("Epochs")
         plt.show()
 
     if "neurons" in plots:
         # Number of layers
         precision = []
         recall = []
-        layers = []
         for i in range(5, 55, 5):
-            model = DeepLearning(neurons=i)
-            model.create_data()
+            model = DeepLearning(x_train, y_train, x_val, y_val, x_test, y_test, neurons=i)
             results = model.train()
             precision.append(results[0])
             recall.append(results[1])
-            layers.append(i)
-        plt.plot(layers, precision, label="Precision")
-        plt.plot(layers, recall, label="Recall")
-        plt.legend()
-        plt.xlabel("neurons")
+        plt.scatter(recall, precision)
+        plt.ylabel("Precision")
+        plt.xlabel("Recall")
+        plt.title("Neurons")
         plt.show()
 
     if "layers" in plots:
         # Number of layers
         precision = []
         recall = []
-        layers = []
         for i in range(2, 11):
-            model = DeepLearning(layers=i)
-            model.create_data()
+            model = DeepLearning(x_train, y_train, x_val, y_val, x_test, y_test, layers=i)
             results = model.train()
             precision.append(results[0])
             recall.append(results[1])
-            layers.append(i)
-        plt.plot(layers, precision, label="Precision")
-        plt.plot(layers, recall, label="Recall")
-        plt.legend()
-        plt.xlabel("layers")
+        plt.scatter(recall, precision)
+        plt.ylabel("Precision")
+        plt.xlabel("Recall")
+        plt.title("Layers")
         plt.show()
 
-    if "training_set" in plots:
-        # Number of layers
-        precision = []
-        recall = []
-        layers = []
-        for i in range(1000, 50000, 5000):
-            model = DeepLearning(train_size=i)
-            model.create_data()
-            results = model.train()
-            precision.append(results[0])
-            recall.append(results[1])
-            layers.append(i)
-        plt.plot(layers, precision, label="Precision")
-        plt.plot(layers, recall, label="Recall")
-        plt.legend()
-        plt.xlabel("training set size")
-        plt.show()
+# if "training_set" in plots:
+#     # Training set size
+#     precision = []
+#     recall = []
+#     for i in range(1000, 50000, 5000):
+#         model = DeepLearning(x_train, y_train, x_val, y_val, x_test, y_test, train_size=i)
+#         results = model.train()
+#         precision.append(results[0])
+#         recall.append(results[1])
+# plt.scatter(recall, precision)
+# plt.ylabel("Precision")
+# plt.xlabel("Recall")
+#     plt.title("Training set size")
+#     plt.show()
 
 
 def plot_svm(plots):
@@ -100,3 +94,14 @@ def plot_svm(plots):
         # plt.xlim((0.4, 1))
         # plt.ylim((0.4, 1))
         plt.show()
+
+
+def best_dl_model():
+    model = DeepLearning(epochs=epochs, neurons=neurons, layers=layers, train_size=training_set, verbose=1)
+    if os.path.exists("best_dl_model"):
+        model.load_model("best_dl_model")
+    else:
+        model.create_data()
+        model.train()
+        model.save_model("best_dl_model")
+    return model

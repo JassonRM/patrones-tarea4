@@ -6,7 +6,6 @@ import tensorflow as tf
 physical_devices = tf.config.list_physical_devices('GPU')
 tf.config.experimental.set_memory_growth(physical_devices[0], True)
 
-from tensorflow.keras.datasets import mnist
 from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.layers import *
 from tensorflow.keras.utils import to_categorical  # One hot encoding
@@ -15,20 +14,18 @@ import matplotlib.pyplot as plt
 
 
 class DeepLearning:
-    def __init__(self, epochs=5, layers=2, neurons=518, train_size=50000, val_size=10000, verbose=0):
+    def __init__(self, x_train, y_train, x_val, y_val, x_test, y_test, epochs=5, layers=2, neurons=512, verbose=0):
         self.epochs = epochs
         self.layers = layers
         self.neurons = neurons
-        self.train_size = train_size
-        self.val_size = val_size
         self.verbose = verbose
         self.model = Sequential()
-        self.x_train = []
-        self.y_train = []
-        self.x_val = []
-        self.y_val = []
-        self.x_test = []
-        self.y_test = []
+        self.x_train = x_train
+        self.y_train = y_train
+        self.x_val = x_val
+        self.y_val = y_val
+        self.x_test = x_test
+        self.y_test = y_test
         self.history_callback = None
         self.confusion_matrix = None
         self.report = None
@@ -41,47 +38,21 @@ class DeepLearning:
     def save_model(self, path):
         self.model.save(path)
 
-    def create_data(self):
-        # The MNIST data is split between 60,000 28 x 28 pixel training images and 10,000 28 x 28 pixel images
-        (x_train, y_train), (x_test, y_test) = mnist.load_data()
-
-        # Reshape matrices to 784-length vectors for training
-        x_train = x_train.reshape(60000, 784)
-        x_test = x_test.reshape(10000, 784)
-
-        # Save images for validation
-        if (self.train_size + self.val_size <= 60000):
-            x_val = x_train[-self.val_size:]
-            y_val = y_train[-self.val_size:]
-            x_train = x_train[:self.train_size]
-            y_train = y_train[:self.train_size]
-        else:
-            print("The MNIST data set only has 60000 images, train_size and val_size can't be more than 60000")
-            return
-
+    def train(self):
         # Normalize between 0 and 1
-        x_train = x_train.astype('float32')
-        x_val = x_val.astype('float32')
-        x_test = x_test.astype('float32')
-        x_train /= 255
-        x_val /= 255
-        x_test /= 255
+        self.x_train = self.x_train.astype('float32')
+        self.x_val = self.x_val.astype('float32')
+        self.x_test = self.x_test.astype('float32')
+        self.x_train /= 255
+        self.x_val /= 255
+        self.x_test /= 255
 
         # One hot encoding of the output class
         classes = 10
-        y_train = to_categorical(y_train, classes)
-        y_val = to_categorical(y_val, classes)
-        y_test = to_categorical(y_test, classes)
+        self.y_train = to_categorical(self.y_train, classes)
+        self.y_val = to_categorical(self.y_val, classes)
+        self.y_test = to_categorical(self.y_test, classes)
 
-        # Save data
-        self.x_train = x_train
-        self.y_train = y_train
-        self.x_val = x_val
-        self.y_val = y_val
-        self.x_test = x_test
-        self.y_test = y_test
-
-    def train(self):
         # Configure the model
         self.model.add(Dense(self.neurons, activation='relu', input_shape=(784,)))
         for i in range(self.layers - 2):
@@ -100,16 +71,14 @@ class DeepLearning:
         self.history_callback = self.model.fit(self.x_train, self.y_train, batch_size=128, epochs=self.epochs, verbose=self.verbose,
                                                validation_data=(self.x_val, self.y_val))
 
-        return self.evaluate()
-
-    def evaluate(self):
+        # Evaluate
         score = self.model.evaluate(self.x_test, self.y_test, verbose=self.verbose)
         print('Test score:', score[0])
         print('Test accuracy:', score[1])
 
         # Calculate confusion matrix and report
         ground_truth = self.y_test.argmax(axis=1)
-        predictions = self.predict(self.x_test).argmax(axis=1)
+        predictions = self.model.predict(self.x_test).argmax(axis=1)
         self.confusion_matrix = confusion_matrix(ground_truth, predictions)
         self.report = classification_report(ground_truth, predictions)
         stats = precision_recall_fscore_support(ground_truth, predictions, average="weighted")
