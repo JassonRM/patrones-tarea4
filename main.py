@@ -10,19 +10,18 @@ from deep_learning import DeepLearning
 from gui import Window
 
 if __name__ == '__main__':
-    plot_deep_learning(["epochs", "layers", "neurons", "training_set"])
-    plot_svm(['degree'])
+    mode = 0
+    if mode == 1:
+        model = best_dl_model()
+    else:
+        model = best_svm_model()
 
-    # model = best_dl_model()
-    # model.create_data()
-    #
-    # os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
-    # QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
-    # app = QApplication(sys.argv)
-    # window = Window(model)
-    # sys.exit(app.exec_())
+    os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
+    QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
+    app = QApplication(sys.argv)
+    window = Window(model)
+    sys.exit(app.exec_())
 
-    plot_svm(['degree'])
-    # model2 = SVM(x_train, x_test, y_train, y_test)
-    # model2.train()
-    # model2.print()
+    # plot_deep_learning(["epochs", "layers", "neurons", "training_set"])
+    # plot_svm(['kernel', 'C'])
+

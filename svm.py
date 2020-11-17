@@ -11,6 +11,7 @@
 
 from sklearn import svm, metrics
 from sklearn.metrics import precision_recall_fscore_support
+from joblib import dump, load
 
 
 class SVM:
@@ -45,6 +46,12 @@ class SVM:
 
     def predict(self, x):
         return self.classifier.predict(x)
+
+    def load_model(self, path):
+        self.classifier = load(path)
+
+    def save_model(self, path):
+        dump(self.classifier, path)
 
     def print(self):
         print("Confusion matrix:\n%s" % self.confusion_matrix)
