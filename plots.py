@@ -2,8 +2,6 @@ import matplotlib.pyplot as plt
 from matplotlib import patches
 import numpy as np
 from deep_learning import DeepLearning
-from sklearn import datasets
-from sklearn.model_selection import train_test_split
 from svm import SVM
 import os
 from create_data import create_data
@@ -242,14 +240,28 @@ def best_dl_model(retrain=False):
         best_neurons = None
         best_layers = None
 
-        for training_set in range(10000, 60000, 10000):
+        # training_sets = range(10000, 60000, 20000)
+        # epochs_list = range(2, 21, 5)
+        # neurons_list = range(5, 60, 20)
+        # layers_list = range(2, 11, 3)
+        training_sets = range(10000, 60000, 30000)
+        epochs_list = range(2, 21, 10)
+        neurons_list = range(5, 60, 30)
+        layers_list = range(2, 11, 5)
+        total_training = len(training_sets) * len(epochs_list) * len(neurons_list) * len(layers_list)
+        current = 1
+        results = []
+
+        for training_set in training_sets:
             x_train, y_train, x_val, y_val, x_test, y_test = create_data()
-            for epochs in range(2, 21, 2):
-                for neurons in range(5, 60, 10):
-                    for layers in range(2, 11, 2):
-                        model = DeepLearning(x_train, y_train, x_val, y_val, x_test, y_test, epochs=epochs,
-                                             neurons=neurons, layers=layers)
+            for epochs in epochs_list:
+                for neurons in neurons_list:
+                    for layers in layers_list:
+                        model = DeepLearning(x_train, y_train, x_val, y_val, x_test, y_test, epochs=epochs, neurons=neurons, layers=layers)
                         precision, recall = model.train()
+                        results.append([precision, recall, training_set, epochs, neurons, layers])
+                        print("Trained: {} / {}".format(current, total_training))
+                        current += 1
                         if precision + recall > best_precision + best_recall:
                             best_model = model
                             best_precision = precision
@@ -259,6 +271,25 @@ def best_dl_model(retrain=False):
                             best_neurons = neurons
                             best_layers = layers
 
+        # Graph pareto's front
+        plt.ylabel('Recall')
+        plt.xlabel('Precision')
+        results_array = np.array(results)
+        pareto = identify_pareto(results_array)
+        pareto_front = results_array[pareto]
+        ax = plt.gca()
+
+        for corner in pareto_front:
+            rect = patches.Rectangle((0, 0), corner[0], corner[1], facecolor='gray', alpha=0.005)
+            ax.add_patch(rect)
+
+        plt.scatter(results_array[:, 0], results_array[:, 1])
+        plt.show()
+
+        for element in pareto_front:
+            print("Training set: {} Epochs: {} Neurons: {} Layers: {}".format(element[2], element[3], element[4], element[5]))
+
+        print("----------------------")
         print("Best configuration:")
         print("Precision: ", best_precision)
         print("Recall: ", best_recall)
@@ -266,11 +297,11 @@ def best_dl_model(retrain=False):
         print("Epochs: ", best_epochs)
         print("Neurons: ", best_neurons)
         print("Layers: ", best_layers)
+        print("Layers: ", best_layers)
         print("----------------------")
         best_model.print()
         best_model.save_model("best_dl_model")
     return best_model
-
 
 # Code taken from https://pythonhealthcare.org/tag/pareto-front/
 def identify_pareto(scores):
