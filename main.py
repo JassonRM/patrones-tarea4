@@ -7,9 +7,9 @@ from gui import Window
 if __name__ == '__main__':
     mode = 1
     if mode == 1:
-        model = best_dl_model(retrain=True)
+        model = best_dl_model(retrain=False)
     else:
-        model = best_svm_model()
+        model = best_svm_model(retrain=False)
 
     os.environ["QT_AUTO_SCREEN_SCALE_FACTOR"] = "1"
     QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)

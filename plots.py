@@ -5,9 +5,9 @@ from deep_learning import DeepLearning
 from svm import SVM
 import os
 from create_data import create_data
-import warnings
-
-warnings.filterwarnings('ignore')
+# import warnings
+#
+# warnings.filterwarnings('ignore')
 
 
 def plot_svm(plots):
@@ -249,10 +249,10 @@ def best_dl_model(retrain=False):
         best_neurons = None
         best_layers = None
 
-        training_sets = range(10000, 60000, 20000)
-        epochs_list = range(2, 203, 50)
-        neurons_list = range(5, 100, 30)
-        layers_list = range(10, 41, 10)
+        training_sets = range(20000, 60000, 20000)
+        epochs_list = range(5, 15, 3)
+        neurons_list = range(30, 100, 30)
+        layers_list = range(10, 40, 10)
         total_training = len(training_sets) * len(epochs_list) * len(neurons_list) * len(layers_list)
         current = 1
         results = []
