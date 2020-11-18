@@ -11,8 +11,8 @@ from tensorflow.keras.utils import to_categorical  # One hot encoding
 from sklearn.metrics import confusion_matrix, classification_report, precision_recall_fscore_support
 
 # CUDA Setup
-physical_devices = tf.config.list_physical_devices('GPU')
-tf.config.experimental.set_memory_growth(physical_devices[0], True)
+# physical_devices = tf.config.list_physical_devices('GPU')
+# tf.config.experimental.set_memory_growth(physical_devices[0], True)
 
 # This class is based on the tutorial presented in
 # https://machinelearningmastery.com/how-to-develop-a-convolutional-neural-network-from-scratch-for-mnist-handwritten-digit-classification/

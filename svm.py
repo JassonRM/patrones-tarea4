@@ -57,12 +57,13 @@ class SVM:
         return self.classifier.kernel, self.classifier.C, self.classifier.gamma, self.classifier.degree
 
     def print(self):
-        print("Confusion matrix:\n%s" % self.confusion_matrix)
-        print("Precision:\n%s" % self.precision)
-        print("Recall:\n%s" % self.recall)
-        print(self.avg_recall)
-        print(self.avg_precision)
-        print(self.classifier.kernel)
-        print(self.classifier.gamma)
-        print(self.classifier.C)
-        print(self.classifier.degree)
+        print("Confusion matrix:\n%s\n" % self.confusion_matrix)
+        print("Precision: %s" % self.precision)
+        print("Average precision: %s" % self.avg_precision)
+        print("Recall: %s" % self.recall)
+        print("Average recall: %s" % self.avg_recall)
+
+        print("Kernel: %s" % self.classifier.kernel)
+        print("Gamma: %s" % self.classifier.gamma)
+        print("C: %s" % self.classifier.C)
+        print("Degree: %s" % self.classifier.degree)

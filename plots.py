@@ -164,9 +164,7 @@ def best_svm_model(retrain=False):
         plt.scatter(precision, recall, zorder=1)
         plt.title('Pareto Front')
         plt.show()
-        print(pareto)
-        for i in pareto:
-            print(config[i])
+
         best_model.save_model('best_svm_model')
         best_model.print()
     return best_model
