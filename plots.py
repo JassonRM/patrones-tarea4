@@ -102,7 +102,6 @@ def plot_svm(plots):
         plt.plot(precision, recall, 'bo')
         plt.ylabel('Recall')
         plt.xlabel('Precision')
-
         plt.show()
 
 
@@ -179,14 +178,14 @@ def plot_deep_learning(plots):
         # Number of epochs
         precision = []
         recall = []
-        for i in range(2, 21, 2):
+        for i in range(2, 203, 50):
             model = DeepLearning(x_train, y_train, x_val, y_val, x_test, y_test, epochs=i)
             results = model.train()
             precision.append(results[0])
             recall.append(results[1])
-        plt.scatter(recall, precision)
-        plt.ylabel("Precision")
-        plt.xlabel("Recall")
+        plt.scatter(precision, recall)
+        plt.xlabel("Precision")
+        plt.ylabel("Recall")
         plt.title("Epochs")
         plt.show()
 
@@ -194,14 +193,14 @@ def plot_deep_learning(plots):
         # Number of layers
         precision = []
         recall = []
-        for i in range(5, 60, 10):
+        for i in range(5, 100, 30):
             model = DeepLearning(x_train, y_train, x_val, y_val, x_test, y_test, neurons=i)
             results = model.train()
             precision.append(results[0])
             recall.append(results[1])
-        plt.scatter(recall, precision)
-        plt.ylabel("Precision")
-        plt.xlabel("Recall")
+        plt.scatter(precision, recall)
+        plt.xlabel("Precision")
+        plt.ylabel("Recall")
         plt.title("Neurons")
         plt.show()
 
@@ -209,14 +208,14 @@ def plot_deep_learning(plots):
         # Number of layers
         precision = []
         recall = []
-        for i in range(2, 11, 2):
+        for i in range(10, 41, 10):
             model = DeepLearning(x_train, y_train, x_val, y_val, x_test, y_test, layers=i)
             results = model.train()
             precision.append(results[0])
             recall.append(results[1])
-        plt.scatter(recall, precision)
-        plt.ylabel("Precision")
-        plt.xlabel("Recall")
+        plt.scatter(precision, recall)
+        plt.xlabel("Precision")
+        plt.ylabel("Recall")
         plt.title("Layers")
         plt.show()
 
@@ -230,9 +229,9 @@ def plot_deep_learning(plots):
             results = model.train()
             precision.append(results[0])
             recall.append(results[1])
-        plt.scatter(recall, precision)
-        plt.ylabel("Precision")
-        plt.xlabel("Recall")
+        plt.scatter(precision, recall)
+        plt.xlabel("Precision")
+        plt.ylabel("Recall")
         plt.title("Training set size")
         plt.show()
 
@@ -251,9 +250,9 @@ def best_dl_model(retrain=False):
         best_layers = None
 
         training_sets = range(10000, 60000, 20000)
-        epochs_list = range(2, 21, 5)
-        neurons_list = range(5, 60, 20)
-        layers_list = range(2, 11, 3)
+        epochs_list = range(2, 203, 50)
+        neurons_list = range(5, 100, 30)
+        layers_list = range(10, 41, 10)
         total_training = len(training_sets) * len(epochs_list) * len(neurons_list) * len(layers_list)
         current = 1
         results = []
