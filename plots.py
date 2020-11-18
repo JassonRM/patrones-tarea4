@@ -7,7 +7,7 @@ import os
 from create_data import create_data
 import warnings
 
-warnings.filterwarnings('always')
+warnings.filterwarnings('ignore')
 
 
 def plot_svm(plots):
@@ -160,7 +160,7 @@ def best_svm_model(retrain=False):
         ax = plt.gca()
 
         for corner in pareto_front:
-            rect = patches.Rectangle((0, 0), corner[0], corner[1], facecolor='gray', alpha=0.005, zorder=-1)
+            rect = patches.Rectangle((0, 0), corner[0], corner[1], facecolor='gray', alpha=0.05, zorder=-1)
             ax.add_patch(rect)
         plt.scatter(precision, recall, zorder=1)
         plt.title('Pareto Front')
@@ -250,14 +250,10 @@ def best_dl_model(retrain=False):
         best_neurons = None
         best_layers = None
 
-        # training_sets = range(10000, 60000, 20000)
-        # epochs_list = range(2, 21, 5)
-        # neurons_list = range(5, 60, 20)
-        # layers_list = range(2, 11, 3)
-        training_sets = range(10000, 60000, 30000)
-        epochs_list = range(2, 21, 10)
-        neurons_list = range(5, 60, 30)
-        layers_list = range(2, 11, 5)
+        training_sets = range(10000, 60000, 20000)
+        epochs_list = range(2, 21, 5)
+        neurons_list = range(5, 60, 20)
+        layers_list = range(2, 11, 3)
         total_training = len(training_sets) * len(epochs_list) * len(neurons_list) * len(layers_list)
         current = 1
         results = []
@@ -289,15 +285,15 @@ def best_dl_model(retrain=False):
         pareto_front = results_array[pareto]
         ax = plt.gca()
 
-        for corner in pareto_front:
-            rect = patches.Rectangle((0, 0), corner[0], corner[1], facecolor='gray', alpha=0.005)
-            ax.add_patch(rect)
-
-        plt.scatter(results_array[:, 0], results_array[:, 1])
-        plt.show()
-
         for element in pareto_front:
-            print("Training set: {} Epochs: {} Neurons: {} Layers: {}".format(element[2], element[3], element[4], element[5]))
+            rect = patches.Rectangle((0, 0), element[0], element[1], facecolor='gray', alpha=0.05, zorder=-1)
+            ax.add_patch(rect)
+            print("Training set: {} Epochs: {} Neurons: {} Layers: {}".format(element[2], element[3], element[4],
+                                                                              element[5]))
+
+        plt.scatter(results_array[:, 0], results_array[:, 1], zorder=1)
+        plt.title('Pareto Front')
+        plt.show()
 
         print("----------------------")
         print("Best configuration:")
