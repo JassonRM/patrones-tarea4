@@ -5,9 +5,9 @@ from deep_learning import DeepLearning
 from svm import SVM
 import os
 from create_data import create_data
-# import warnings
-#
-# warnings.filterwarnings('ignore')
+import warnings
+
+warnings.filterwarnings('ignore')
 
 
 def plot_svm(plots):
